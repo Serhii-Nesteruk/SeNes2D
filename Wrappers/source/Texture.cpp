@@ -110,7 +110,7 @@ unsigned char* Texture::loadImageFromFile(const std::filesystem::path &path) {
 
 void Texture::loadToTheGraphicsCard() {
     bind(Gl::Texture::Target::Texture2D);
-    if (data)
+    if (data && isBind())
     {
         Gl::Texture::texImage2D(Target::Texture2D, 0, Channel::RGB, width, height,
                                 0, Channel::RGB, GL_UNSIGNED_BYTE, data);

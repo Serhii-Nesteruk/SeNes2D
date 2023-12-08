@@ -89,3 +89,7 @@ void Shader::checkCompileStatus()
 		throw std::runtime_error("Failed to create shader");
 	}
 }
+
+void Shader::setType(Gl::Shader::Type type_) {
+    type = type_; // TODO: update shader state
+}

@@ -96,11 +96,11 @@ void Window::initializeGLFWVersion(int major, int majorValue, int minor, int min
 Window::Size::Size(GLint x, GLint y)  : x(x), y(y) {
 }
 
-GLint Window::Size::getX()  {
+GLint Window::Size::getX() const {
     return x;
 }
 
-GLint Window::Size::getY() {
+GLint Window::Size::getY() const {
     return y;
 }
 

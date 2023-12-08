@@ -73,7 +73,7 @@ void VAO::vertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean n
 {
 	Gl::VAO::vertexAttribPointer(index, size, type, normilized, stride, pointer);
 }
-
+// TODO:
 //#include "VAO.h"
 //
 //VAO::VAO(bool isGenerate, bool isBind)

@@ -29,6 +29,14 @@ add_executable(SeNes2D
 
         Utils/source/Utils.cpp
         Utils/include/Utils.h
+        Objects/Shapes/3D/Cube/source/Cube.cpp
+        Objects/Shapes/3D/Cube/include/Cube.h
+        Objects/WorldObject3D/source/WorldObject3D.cpp
+        Objects/WorldObject3D/include/WorldObject3D.h
+        Objects/WorldObject2D/source/WorldObject2D.cpp
+        Objects/WorldObject2D/include/WorldObject2D.h
+        Objects/Camera/source/Camera.cpp
+        Objects/Camera/include/Camera.h
 )
 
 target_link_libraries(SeNes2D PUBLIC glfw)

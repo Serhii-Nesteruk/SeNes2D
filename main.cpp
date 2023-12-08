@@ -1,17 +1,13 @@
-#include "Wrappers/include/VAO.h"
-#include "Wrappers/include/VBO.h"
-#include "Wrappers/include/Texture.h"
-#include "Wrappers/include/Shader.h"
-#include "Wrappers/include/ShaderProgram.h"
-#include "Wrappers/include/Window.h"
+#include "Objects/Camera/include/Camera.h"
+#include "../../Wrappers/include/Window.h"
+#include "Objects/Shapes/3D/Cube/include/Cube.h"
 
-#include "GLM/glm.hpp"
-#include "dependencies/GLM/glm/gtx/transform.hpp"
 
 #include <iostream>
 
-void rotateControl(Window& window, float& rotateX, float& rotateY, float& rotateZ)
-{
+void rotateControl(Window& window, Cube& cube) {
+    static GLfloat rotateX, rotateY, rotateZ;
+
     if (glfwGetKey(window.getWinTarget(), GLFW_KEY_D) == GLFW_PRESS)
         rotateX += 0.0001f;
 
@@ -29,6 +25,8 @@ void rotateControl(Window& window, float& rotateX, float& rotateY, float& rotate
 
     if (glfwGetKey(window.getWinTarget(), GLFW_KEY_E) == GLFW_PRESS)
         rotateZ += 0.0001f;
+
+    cube.setRotation(glm::vec3(rotateX, rotateY, rotateZ));
 }
 
 int main() {
@@ -52,83 +50,19 @@ int main() {
 
     Window::Size winSize = window.getFramebufferSize();
     shaderProgram.uniform("uWindowSize", static_cast<GLfloat>(winSize.getX()), static_cast<GLfloat>(winSize.getY()));
-    std::vector<GLfloat> vertices =
-            {
-                    // Перший трикутник (передня сторона)
-                    -100,  100, 0.0,   0.0, 0.0, 1.0,   0.0, 1.0,
-                    -100, -100, 0.0,   0.0, 0.0, 1.0,   0.0, 0.0,
-                    100, -100, 0.0,    0.0, 0.0, 1.0,   1.0, 0.0,
-
-                    -100,  100, 0.0,   0.0, 0.0, 1.0,   0.0, 1.0,
-                    100, -100, 0.0,    0.0, 0.0, 1.0,   1.0, 0.0,
-                    100, 100, 0.0,     0.0, 0.0, 1.0,   1.0, 1.0,
-
-                    // Другий трикутник (задня сторона)
-                    -100,  100, -200.0,   0.0, 0.0, 1.0,   0.0, 1.0,
-                    100, -100, -200.0,    0.0, 0.0, 1.0,   1.0, 0.0,
-                    -100, -100, -200.0,   0.0, 0.0, 1.0,   0.0, 0.0,
-
-                    -100,  100, -200.0,   0.0, 0.0, 1.0,   0.0, 1.0,
-                    100, 100, -200.0,     0.0, 0.0, 1.0,   1.0, 1.0,
-                    100, -100, -200.0,    0.0, 0.0, 1.0,   1.0, 0.0,
-
-                    // Третій трикутник (ліва сторона)
-                    -100,  100, 0.0,   -1.0, 0.0, 0.0,   0.0, 1.0,
-                    -100, -100, -200.0, -1.0, 0.0, 0.0,   1.0, 0.0,
-                    -100, -100, 0.0,   -1.0, 0.0, 0.0,   0.0, 0.0,
-
-                    -100,  100, 0.0,   -1.0, 0.0, 0.0,   0.0, 1.0,
-                    -100, 100, -200.0,  -1.0, 0.0, 0.0,   1.0, 1.0,
-                    -100, -100, -200.0, -1.0, 0.0, 0.0,   1.0, 0.0,
-
-                    // Четвертий трикутник (права сторона)
-                    100,  100, 0.0,    1.0, 0.0, 0.0,   0.0, 1.0,
-                    100, -100, 0.0,    1.0, 0.0, 0.0,   0.0, 0.0,
-                    100, -100, -200.0,  1.0, 0.0, 0.0,   1.0, 0.0,
-
-                    100,  100, 0.0,    1.0, 0.0, 0.0,   0.0, 1.0,
-                    100, -100, -200.0,  1.0, 0.0, 0.0,   1.0, 0.0,
-                    100, 100, -200.0,   1.0, 0.0, 0.0,   1.0, 1.0,
-
-                    // П'ятий трикутник (верхня сторона)
-                    -100, 100, 0.0,    0.0, 1.0, 0.0,   0.0, 1.0,
-                    100, 100, -200.0,   0.0, 1.0, 0.0,   1.0, 0.0,
-                    -100, 100, -200.0,  0.0, 1.0, 0.0,   0.0, 0.0,
-
-                    -100, 100, 0.0,    0.0, 1.0, 0.0,   0.0, 1.0,
-                    100, 100, 0.0,      0.0, 1.0, 0.0,   1.0, 1.0,
-                    100, 100, -200.0,   0.0, 1.0, 0.0,   1.0, 0.0,
-
-                    // Шостий трикутник (нижня сторона)
-                    -100, -100, 0.0,    0.0, -1.0, 0.0,   0.0, 1.0,
-                    -100, -100, -200.0,  0.0, -1.0, 0.0,   0.0, 0.0,
-                    100, -100, -200.0,   0.0, -1.0, 0.0,   1.0, 0.0,
-
-                    -100, -100, 0.0,    0.0, -1.0, 0.0,   0.0, 1.0,
-                    100, -100, -200.0,   0.0, -1.0, 0.0,   1.0, 0.0,
-                    100, -100, 0.0,      0.0, -1.0, 0.0,   1.0, 1.0,
-            };
-    VAO vao(true, true);
-    VBO vbo(vertices);
-
-    vao.vertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), nullptr);
-    vao.vertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-    vao.vertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
-
-    vao.unbind();
-    vbo.unbind();
 
     Texture texture1(Gl::Texture::Target::Texture2D, Gl::Texture::Wrap::Repeat, Gl::Texture::Wrap::Repeat,
                      Gl::Texture::MinFilter::LinearMipmapLinear, Gl::Texture::MagFilter::Linear);
-    texture1.loadImage("container.jpg", true);
+    texture1.loadImage("assets/Images/container.jpg", true);
 
     Texture texture2(Gl::Texture::Target::Texture2D, Gl::Texture::Wrap::Repeat, Gl::Texture::Wrap::Repeat,
                    Gl::Texture::MinFilter::LinearMipmapLinear, Gl::Texture::MagFilter::Linear);
-    texture2.loadImage("smiley-face.jpg", true);
+    texture2.loadImage("assets/Images/smiley-face.jpg", true);
 
-    float rotateX = 0.f;
-    float rotateY = 0.f;
-    float rotateZ = 0.f;
+    Cube cube(glm::vec3(0.0f, 0.0f, -400.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+
+    cube.initializeVertices();
+    cube.initVAOAndVBO();
 
     float aspect = (winSize.getY() > 0) ? static_cast<float>(winSize.getX()) / static_cast<float>(winSize.getY()) : 1.0f;
     glm::mat4 projection = glm::perspective(glm::radians(90.f), aspect,0.0001f, 10000.f);
@@ -142,32 +76,63 @@ int main() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
+    glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
+    glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    GLfloat cameraYaw = -90.0f;
+    GLfloat cameraPitch = 0.0f;
+
+    Camera camera(cameraPosition, cameraUp, cameraYaw, cameraPitch);
+
+    double lastTime = glfwGetTime();
+
+    GLfloat deltaTime = 0.0f;
+    GLint direction = GLFW_KEY_W;
+    GLfloat xOffset = 0.0f;
+    GLfloat yOffset = 0.0f;
+
     while(!glfwWindowShouldClose(window.getWinTarget())) { // TODO: Replace it
         window.clearColor(0.2f, 0.3f, 0.3f, 1.f);
         window.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        rotateControl(window, rotateX, rotateY, rotateZ);
+      // rotateControl(window, rotateX, rotateY, rotateZ);
 
-        glm::mat4 modelMatrix = glm::mat4(1.0);
-        modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0, -400));
+      // glm::mat4 modelMatrix = glm::mat4(1.0);
+      // modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0, -400));
 
-        modelMatrix = glm::rotate(modelMatrix, glm::degrees(rotateX), glm::vec3(1, 0, 0));
-        modelMatrix = glm::rotate(modelMatrix, glm::degrees(rotateY), glm::vec3(0, 1, 0));
-        modelMatrix = glm::rotate(modelMatrix, glm::degrees(rotateZ), glm::vec3(0, 0, 1));
+      // modelMatrix = glm::rotate(modelMatrix, glm::degrees(rotateX), glm::vec3(1, 0, 0));
+      // modelMatrix = glm::rotate(modelMatrix, glm::degrees(rotateY), glm::vec3(0, 1, 0));
+      // modelMatrix = glm::rotate(modelMatrix, glm::degrees(rotateZ), glm::vec3(0, 0, 1));
 
-        shaderProgram.uniform("uModelMatrix", 1, GL_FALSE, modelMatrix);
+      // shaderProgram.uniform("uModelMatrix", 1, GL_FALSE, modelMatrix);
 
-        vao.bind();
+        double currentTime = glfwGetTime();
+        GLfloat deltaTime = static_cast<GLfloat>(currentTime - lastTime);
+        lastTime = currentTime;
 
-        texture1.active(GL_TEXTURE0);
-        texture1.bind(Gl::Texture::Target::Texture2D);
-        texture2.active(GL_TEXTURE1);
-        texture2.bind(Gl::Texture::Target::Texture2D);
+        if (glfwGetKey(window.getWinTarget(), GLFW_KEY_D) == GLFW_PRESS)
+            direction = GLFW_KEY_D;
 
-        Gl::drawArrays(GL_TRIANGLES, 0, 36);
+        if (glfwGetKey(window.getWinTarget(), GLFW_KEY_A) == GLFW_PRESS)
+            direction = GLFW_KEY_A;
 
-        window.swapBuffers(window.getWinTarget());
-        window.pollEvents();
+        if (glfwGetKey(window.getWinTarget(), GLFW_KEY_W) == GLFW_PRESS)
+            direction = GLFW_KEY_W;
+
+        if (glfwGetKey(window.getWinTarget(), GLFW_KEY_S) == GLFW_PRESS)
+            direction = GLFW_KEY_S;
+
+       camera.processKeyboard(direction, deltaTime);
+       camera.processMouseMovement(xOffset, yOffset);
+
+       glm::mat4 viewMatrix = camera.getViewMatrix();
+       glm::mat4 projectionMatrix = camera.getProjectionMatrix(winSize.getX(), winSize.getY());
+
+       cube.update(shaderProgram);
+       cube.draw(shaderProgram, texture1, texture2);
+      // rotateControl(window, cube);
+
+       window.swapBuffers(window.getWinTarget());
+       window.pollEvents();
     }
 
     return EXIT_SUCCESS;

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "glad.h"
-#include "GLFW/glfw3.h"
+#include "Gl.h"
 
 #include <string>
 
@@ -11,8 +10,8 @@ public:
         Size() = default;
         Size(GLint x, GLint y);
 
-        GLint getX();
-        GLint getY();
+        [[nodiscard]] GLint getX() const;
+        [[nodiscard]] GLint getY() const;
         void setX(GLint x);
         void setY(GLint y);
     private:

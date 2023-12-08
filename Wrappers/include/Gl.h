@@ -1,13 +1,17 @@
 #pragma once
 
 #include "../GLAD/glad.h"
-#include "../glfw-3.3.7/include/GLFW/glfw3.h"
 #include "../../../Utils/include/Utils.h"
+#include "../glfw-3.3.7/include/GLFW/glfw3.h"
+//#include <GL/glew.h>
 
 #include <string>
 #include <vector>
+
+// clang-format off
 #include <Windows.h>
 #include <debugapi.h>
+// clang-format on
 
 class Gl {
 public:
@@ -162,7 +166,7 @@ public:
         inline static GLuint id = invalidId;
     };
 
-    class Program {//TODO: Continue implementation
+    class Program {
     public:
         inline static const GLuint invalidId = GL_INVALID_INDEX;
 
