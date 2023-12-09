@@ -5,26 +5,37 @@ Camera::Camera(const glm::vec3 &position, const glm::vec3 &up, GLfloat &yaw, GLf
     updateCameraVectors();
 }
 
-glm::mat4 Camera::getViewMatrix() const {
-    return glm::lookAt(position, position + front, up);
-}
-
-glm::mat4 Camera::getProjectionMatrix(GLfloat screenWidth, GLfloat screenHeight) const {
-    return glm::perspective(glm::radians(zoom), screenWidth / screenHeight, near_, far_);
+glm::mat4 Camera::getViewMatrix(GLfloat screenWidth, GLfloat screenHeight) const {
+    glm::mat4 view = glm::mat4(1.f);
+    view = glm::translate(view, position * glm::vec3(1.f, 1.f, -1.f));
+    view = glm::rotate(view, glm::radians(pitch), glm::vec3(1.f, 0.f, 0.f));
+    view = glm::rotate(view, glm::radians(yaw), glm::vec3(0.f, 1.f, 0.f));
+    glm::mat4 projection = glm::perspective(glm::radians(zoom), screenWidth / screenHeight, near_ ,far_);
+    return projection * glm::inverse(view);
 }
 
 void Camera::updateCameraVectors() {
     glm::vec3 newFront;
-    newFront.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    newFront.x = cos(glm::radians(pitch)) * -sin(glm::radians(yaw));
     newFront.y = sin(glm::radians(pitch));
-    newFront.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    newFront.z = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
     front = glm::normalize(newFront);
 
-    right = glm::normalize(glm::cross(front, worldUp));
-    up = glm::normalize(glm::cross(right, front));
+    glm::vec3 newUp;
+    float newPitch = pitch + glm::radians(-90.f);
+
+    newUp.x = cos(glm::radians(newPitch)) * -sin(glm::radians(yaw));
+    newUp.y = sin(glm::radians(newPitch));
+    newUp.z = cos(glm::radians(newPitch)) * cos(glm::radians(yaw));
+    up = newUp;
+
+    right = glm::normalize(glm::cross(front, up));
 }
 
 void Camera::processMouseMovement(GLfloat xOffset, GLfloat yOffset, GLboolean constrainPitch) {
+    if (xOffset == 0.f && yOffset == 0.f)
+        return;
+
     xOffset *= sensitivity;
     yOffset *= sensitivity;
 
@@ -38,11 +49,16 @@ void Camera::processMouseMovement(GLfloat xOffset, GLfloat yOffset, GLboolean co
             pitch = -89.0f;
     }
 
-    updateCameraVectors();
+    while (yaw >= 360.f)
+        yaw -= 360.f;
+    while (yaw < 0.f)
+        yaw += 360.f;
+
+    // updateCameraVectors();
 }
 
 void Camera::processKeyboard(GLint direction, GLfloat deltaTime) {
-    GLfloat velocity = speed * deltaTime;
+    GLfloat velocity = speed * deltaTime * 10.f;
     if (direction == GLFW_KEY_W)
         position += front * velocity;
     if (direction == GLFW_KEY_S)
@@ -115,4 +131,8 @@ GLfloat Camera::getYaw() const {
 
 GLfloat Camera::getPitch() const {
     return this->pitch;
+}
+
+glm::vec3 Camera::getPosition() const {
+    return position;
 }

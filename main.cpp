@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+#include <iostream>
+
 void rotateControl(Window& window, Cube& cube) {
     static GLfloat rotateX, rotateY, rotateZ;
 
@@ -39,7 +41,7 @@ int main() {
         return 1;
     }
 
-    Gl::viewport(0, 0, 600, 600);
+    Gl::viewport(0, 0, 600, 600); // TODO:
 
     Shader vertexShader("assets/shaders/main.vert", Gl::Shader::Type::VERTEX);
     Shader fragmentShader("assets/shaders/main.frag", Gl::Shader::Type::FRAGMENT);
@@ -64,15 +66,6 @@ int main() {
     cube.initializeVertices();
     cube.initVAOAndVBO();
 
-    float aspect = (winSize.getY() > 0) ? static_cast<float>(winSize.getX()) / static_cast<float>(winSize.getY()) : 1.0f;
-    glm::mat4 projection = glm::perspective(glm::radians(90.f), aspect,0.0001f, 10000.f);
-    glm::mat4 view = glm::mat4(1.f);
-
-    shaderProgram.uniform("uProjectionMatrix", 1, GL_FALSE, projection);
-    shaderProgram.uniform("uViewMatrix", 1, GL_FALSE, view);
-    shaderProgram.uniform("texture1", 0);
-    shaderProgram.uniform("texture2", 1);
-
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
@@ -86,24 +79,19 @@ int main() {
     double lastTime = glfwGetTime();
 
     GLfloat deltaTime = 0.0f;
-    GLint direction = GLFW_KEY_W;
+    GLint direction = 0;
     GLfloat xOffset = 0.0f;
     GLfloat yOffset = 0.0f;
+
+    double mousePosX = 0.f, mousePosY = 0.f;
+    double lastMousePosX = 0.f, lastMousePosY = 0.f;
+    glfwGetCursorPos(window.getWinTarget(), &mousePosX, &mousePosY);
+    lastMousePosX = mousePosX;
+    lastMousePosY = mousePosY;
 
     while(!glfwWindowShouldClose(window.getWinTarget())) { // TODO: Replace it
         window.clearColor(0.2f, 0.3f, 0.3f, 1.f);
         window.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-      // rotateControl(window, rotateX, rotateY, rotateZ);
-
-      // glm::mat4 modelMatrix = glm::mat4(1.0);
-      // modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0, -400));
-
-      // modelMatrix = glm::rotate(modelMatrix, glm::degrees(rotateX), glm::vec3(1, 0, 0));
-      // modelMatrix = glm::rotate(modelMatrix, glm::degrees(rotateY), glm::vec3(0, 1, 0));
-      // modelMatrix = glm::rotate(modelMatrix, glm::degrees(rotateZ), glm::vec3(0, 0, 1));
-
-      // shaderProgram.uniform("uModelMatrix", 1, GL_FALSE, modelMatrix);
 
         double currentTime = glfwGetTime();
         GLfloat deltaTime = static_cast<GLfloat>(currentTime - lastTime);
@@ -121,11 +109,24 @@ int main() {
         if (glfwGetKey(window.getWinTarget(), GLFW_KEY_S) == GLFW_PRESS)
             direction = GLFW_KEY_S;
 
-       camera.processKeyboard(direction, deltaTime);
-       camera.processMouseMovement(xOffset, yOffset);
+        //glfwSetCursorPos(window.getWinTarget(), winSize.getX() / 2, winSize.getY() / 2);
+        glfwGetCursorPos(window.getWinTarget(), &mousePosX, &mousePosY);
+        double mousePosXDelta = lastMousePosX - mousePosX;
+        double mousePosYDelta = lastMousePosY - mousePosY;
 
-       glm::mat4 viewMatrix = camera.getViewMatrix();
-       glm::mat4 projectionMatrix = camera.getProjectionMatrix(winSize.getX(), winSize.getY());
+        lastMousePosX = mousePosX;
+        lastMousePosY = mousePosY;
+
+        std::cout << camera.getPosition().x << std::endl;
+
+       camera.processKeyboard(direction, deltaTime);
+       camera.processMouseMovement(mousePosXDelta, mousePosYDelta);
+
+       glm::mat4 viewMatrix = camera.getViewMatrix(winSize.getX(), winSize.getY());
+
+       shaderProgram.uniform("uProjectionViewMatrix", 1, GL_FALSE, viewMatrix);
+       shaderProgram.uniform("texture1", 0);
+       shaderProgram.uniform("texture2", 1);
 
        cube.update(shaderProgram);
        cube.draw(shaderProgram, texture1, texture2);

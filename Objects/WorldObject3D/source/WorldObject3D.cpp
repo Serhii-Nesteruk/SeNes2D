@@ -18,6 +18,7 @@ void WorldObject3D::render(ShaderProgram &shaderProgram, VAO &vao, Texture &text
 glm::mat4 WorldObject3D::calculateModelMatrix() const {
     glm::mat4 modelMatrix = glm::mat4(1.0);
     modelMatrix = glm::translate(modelMatrix, position);
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(-100, 0, 0));
     modelMatrix = glm::rotate(modelMatrix, glm::degrees(rotation.x), glm::vec3(1, 0, 0));
     modelMatrix = glm::rotate(modelMatrix, glm::degrees(rotation.y), glm::vec3(0, 1, 0));
     modelMatrix = glm::rotate(modelMatrix, glm::degrees(rotation.z), glm::vec3(0, 0, 1));

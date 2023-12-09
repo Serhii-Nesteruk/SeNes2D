@@ -1,9 +1,8 @@
 #pragma once
 
-#include "../GLAD/glad.h"
-#include "../../../Utils/include/Utils.h"
-#include "../glfw-3.3.7/include/GLFW/glfw3.h"
-//#include <GL/glew.h>
+#include "glad.h"
+#include "Utils.h"
+#include "GLFW/glfw3.h"
 
 #include <string>
 #include <vector>

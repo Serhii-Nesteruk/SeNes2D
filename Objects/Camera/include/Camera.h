@@ -12,8 +12,7 @@ public:
     Camera(const glm::vec3& position, const glm::vec3& up, GLfloat& yaw, GLfloat pitch);
     ~Camera() = default;
 
-    [[nodiscard]] glm::mat4 getViewMatrix() const;
-    [[nodiscard]] glm::mat4 getProjectionMatrix(GLfloat screenWidth, GLfloat screenHeight) const;
+    [[nodiscard]] glm::mat4 getViewMatrix(GLfloat screenWidth, GLfloat screenHeight) const;
     void processMouseMovement(GLfloat xOffset, GLfloat yOffset, GLboolean constrainPitch = true);
     void processKeyboard(int direction, GLfloat deltaTime);
 
@@ -32,6 +31,7 @@ public:
     [[nodiscard]] GLfloat getFar() const;
     [[nodiscard]] GLfloat getYaw() const;
     [[nodiscard]] GLfloat getPitch() const;
+    [[nodiscard]] glm::vec3 getPosition() const;
 
 private:
     void updateCameraVectors();
@@ -46,8 +46,8 @@ private:
     GLfloat pitch = 0.f;
 
     GLfloat speed = 5.f;
-    GLfloat sensitivity = 0.1f;
+    GLfloat sensitivity = 0.7f;
     GLfloat zoom = 45.f;
     GLfloat near_ = 0.1f;
-    GLfloat far_ = 100.f;
+    GLfloat far_ = 10000.f;
 };
