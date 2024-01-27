@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../../../Wrappers/include/VAO.h"
-#include "../../../Wrappers/include/VBO.h"
-#include "../../../Wrappers/include/Texture.h"
-#include "../../../Wrappers/include/ShaderProgram.h"
-#include "../../../Wrappers/include/Shader.h"
-#include "../../includes/WorldObject3D.h"
+#include "VAO.h"
+#include "VBO.h"
+#include "Texture.h"
+#include "ShaderProgram.h"
+#include "Shader.h"
+#include "WorldObject3D.h"
 
 #include <vector>
 
