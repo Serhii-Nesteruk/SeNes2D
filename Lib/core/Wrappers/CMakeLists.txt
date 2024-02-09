@@ -16,6 +16,6 @@ target_link_libraries(Wrappers
 
 target_include_directories(Wrappers
         PUBLIC
-        include/*.h
+        include
         ../../../dependencies/glfw-3.3.7/include
 )

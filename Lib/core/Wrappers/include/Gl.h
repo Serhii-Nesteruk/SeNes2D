@@ -1,5 +1,10 @@
 #pragma once
 
+// clang-format off
+#include <Windows.h>
+#include <debugapi.h>
+// clang-format on
+
 #include "glad.h"
 
 #include "Utils.h"
@@ -7,11 +12,6 @@
 
 #include <string>
 #include <vector>
-
-// clang-format off
-#include <Windows.h>
-#include <debugapi.h>
-// clang-format on
 
 class Gl {
 public:

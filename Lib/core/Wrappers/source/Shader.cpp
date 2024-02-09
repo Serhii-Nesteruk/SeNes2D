@@ -4,7 +4,7 @@
 
 Shader::Shader(const Gl::Shader::Type type_, bool shouldCreate)
 {
-	type = type_;
+	_type = type_;
 	if (shouldCreate)
 		create();
 }
@@ -29,67 +29,67 @@ void Shader::loadFromFile(const std::filesystem::path& path)
 
 void Shader::compile()
 {
-	Gl::Shader::compile(shader);
+	Gl::Shader::compile(_shader);
 
 	checkCompileStatus();
-	isCompile_ = true;
+	_isCompile = true;
 }
 
 void Shader::setSource(const std::string& source_)
 {
-	source = source_;
-	Gl::Shader::loadSource(shader, source.data());
+	_source = source_;
+	Gl::Shader::loadSource(_shader, _source.data());
 }
 
 void Shader::create()
 {
-	shader = Gl::Shader::create(type);
+	_shader = Gl::Shader::create(_type);
 }
 
 void Shader::deleteShader()
 {
 	//Gl::Shader::deleteShader(shader);
-	glDeleteShader(shader);
-	isCompile_ = false;
-	shader = Gl::Shader::invalidId;
-	source.clear();
+	glDeleteShader(_shader);
+	_isCompile = false;
+	_shader = Gl::Shader::invalidId;
+	_source.clear();
 }
 
 const std::string& Shader::getSource() const
 {
-	return source;
+	return _source;
 }
 
 Gl::Shader::Type Shader::getType() const
 {
-	return type;
+	return _type;
 }
 
 GLuint Shader::getShader() const
 {
-	return shader;
+	return _shader;
 }
 
 bool Shader::isCreate() const
 {
-	return shader != Gl::Shader::invalidId;
+	return _shader != Gl::Shader::invalidId;
 }
 
 bool Shader::isCompile() const
 {
-	return isCompile_;
+	return _isCompile;
 }
 
 void Shader::checkCompileStatus()
 {
-	if (!Gl::Shader::getShaderiv(shader, GL_COMPILE_STATUS))
+	if (!Gl::Shader::getShaderiv(_shader, GL_COMPILE_STATUS))
 	{
 		GLchar infoLog[512];
-		glGetShaderInfoLog(shader, 512, NULL, infoLog);
+		glGetShaderInfoLog(_shader, 512, NULL, infoLog);
 		throw std::runtime_error("Failed to create shader");
 	}
 }
 
 void Shader::setType(Gl::Shader::Type type_) {
-    type = type_; // TODO: update shader state
+    _type = type_; // TODO: update shader state
 }

@@ -34,9 +34,9 @@ private:
 	void checkCompileStatus();
 
 private:
-	bool isCompile_ = false;
-	GLuint shader = Gl::Shader::invalidId;
-	Gl::Shader::Type type = Gl::Shader::Type::FRAGMENT;
-	std::string source{};
+	bool _isCompile = false;
+	GLuint _shader = Gl::Shader::invalidId;
+	Gl::Shader::Type _type = Gl::Shader::Type::FRAGMENT;
+	std::string _source{};
 		
 };

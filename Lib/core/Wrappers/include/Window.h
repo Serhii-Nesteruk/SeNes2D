@@ -15,12 +15,13 @@ public:
         void setX(GLint x);
         void setY(GLint y);
     private:
-        GLint x = 0, y = 0;
+        GLint _x = 0, _y = 0;
     };
 
 	Window();
     Window(Size size, const std::string& title);
 	~Window();
+
 	void create(Size size, const std::string& title, GLFWmonitor* monitor, GLFWwindow* share);
 	void swapBuffers(GLFWwindow* window);
 	void pollEvents();
@@ -29,16 +30,17 @@ public:
 	void initGLFWVersion(int hint, int value);
 	void makeContextCurrent();
     Size getFramebufferSize();
+	[[nodiscard]] bool shouldClose();
 
-    Size getSize() const;
+    [[nodiscard]] Size getSize() const;
 
-    bool wasCreated() const;
+    [[nodiscard]] bool wasCreated() const;
 
 	[[nodiscard]] GLFWwindow* getWinTarget() const;
     void initializeGLFWVersion(int major = GLFW_CONTEXT_VERSION_MAJOR, int majorValue = 3,
                                int minor = GLFW_CONTEXT_VERSION_MINOR, int minorValue = 3);
 private:
-    bool wasCreated_ = false;
-    Size size;
-	GLFWwindow* window = nullptr;
+    bool _wasCreated = false;
+    Size _size;
+	GLFWwindow* _window = nullptr;
 };
