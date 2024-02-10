@@ -1,13 +1,6 @@
-//
-// Created by shdh3 on 12/28/2023.
-//
-
-#ifndef SENES2D_OBJECTS_WORLDOBJECT2D_H
-#define SENES2D_OBJECTS_WORLDOBJECT2D_H
+#pragma once
 
 class WorldObject2D
 {
 
 };
-
-#endif //SENES2D_OBJECTS_WORLDOBJECT2D_H

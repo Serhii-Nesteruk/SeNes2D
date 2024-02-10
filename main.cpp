@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "Camera.h"
 #include "ShaderProgram.h"
 #include "Shader.h"
 #include "VAO.h"
@@ -10,7 +11,11 @@
 #include <iostream>
 #include <vector>
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+GLfloat xOffset = 0.f;
+GLfloat yOffset = 0.f;
+
+void cameraControl(Camera& camera, GLfloat deltaTime);
+void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 
 int main()
 {
@@ -23,90 +28,104 @@ int main()
 		return -1;
 	}
 
-	std::vector<GLfloat> vertices = {
-		-0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f,
-		0.5f,  0.5f, -0.5f,
-		0.5f,  0.5f, -0.5f,
-		-0.5f,  0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-
-		-0.5f, -0.5f,  0.5f,
-		0.5f, -0.5f,  0.5f,
-		0.5f,  0.5f,  0.5f,
-		0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
-		-0.5f, -0.5f,  0.5f,
-
-		-0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
-
-		0.5f,  0.5f,  0.5f,
-		0.5f,  0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f,  0.5f,
-		0.5f,  0.5f,  0.5f,
-
-		-0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f,  0.5f,
-		0.5f, -0.5f,  0.5f,
-		-0.5f, -0.5f,  0.5f,
-		-0.5f, -0.5f, -0.5f,
-
-		-0.5f,  0.5f, -0.5f,
-		0.5f,  0.5f, -0.5f,
-		0.5f,  0.5f,  0.5f,
-		0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f, -0.5f
-	};
-
+	// setting up shaders and the shader program
 	Shader vertexShader("assets//shaders//main.vert", Gl::Shader::Type::VERTEX);
 	Shader fragmentShader("assets//shaders//main.frag", Gl::Shader::Type::FRAGMENT);
 
 	ShaderProgram shaderProgram(vertexShader.getShader(), fragmentShader.getShader());
+	shaderProgram.use();
 
+	GLint windowWidth = 0, windowHeight = 0;
+	glfwGetFramebufferSize(window.getWinTarget(), &windowWidth, &windowHeight);
+	shaderProgram.uniform("uWindowSize", static_cast<GLfloat>(windowWidth), static_cast<GLfloat>(windowHeight));
+
+	std::vector<GLfloat> vertices = {
+		-100, -100, -100,
+		100, -100, -100,
+		100, 100, -100,
+		100, 100, -100,
+		-100, 100, -100,
+		-100, -100, -100,
+
+		-100, -100, 100,
+		100, -100, 100,
+		100, 100, 100,
+		100, 100, 100,
+		-100, 100,100,
+		-100, -100, 100,
+
+		-100, 100, 100,
+		-100, 100, -100,
+		-100, -100, -100,
+		-100, -100, -100,
+		-100, -100, 100,
+		-100, 100, 100,
+
+		100, 100, 100,
+		100, 100, -100,
+		100, -100, -100,
+		100, -100, -100,
+		100, -100, 100,
+		100, 100, 100,
+
+		-100, -100, -100,
+		100, -100, -100,
+		100, -100, 100,
+		100, -100, 100,
+		-100, -100, 100,
+		-100, -100, -100,
+
+		-100, 100, -100,
+		100, 100, -100,
+		100, 100, 100,
+		100, 100, 100,
+		-100,100, 100,
+		-100,100, -100
+	};
+
+	// setup VAO & VBO
 	VBO vbo(vertices);
 	VAO vao(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 
-	glm::mat4 model = glm::mat4(1.0f);
-	glm::mat4 view = glm::mat4(1.0f);
-	glm::mat4 projection = glm::perspective(45.0f, (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
+	// create and setup camera
+	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::vec3 cameraPos = glm::vec3(0.f, 0.f, -3.f);
+	Camera camera(cameraPos, up);
+
+	// Create model, view and projection matrices
+	glm::mat4 model = glm::rotate(model, -55.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::mat4 view = camera.getViewMatrix();
+	glm::mat4 projection = glm::perspective(glm::radians(45.f), (float)windowWidth / (float)windowHeight, 0.001f, 1000.f);
+
+	GLfloat deltaTime = 0.f;
+	GLfloat lastFrame = 0.f;
+	GLfloat currentFrame = 0.f;
+
+	// glfwSetInputMode(window.getWinTarget(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window.getWinTarget(), mouseCallback);
+
+	glEnable(GL_DEPTH_TEST);
 
 	while (!window.shouldClose())
 	{
 		window.pollEvents();
 
-		window.clearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		window.clearColor(0.4f, 0.3f, 0.2f, 1.0f);
 		window.clear(GL_COLOR_BUFFER_BIT);
 
 		shaderProgram.use();
 
-		// camera
-		glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+		// update window size;
+		glfwGetFramebufferSize(window.getWinTarget(), &windowWidth, &windowHeight);
+		projection = glm::perspective(glm::radians(45.f), (float)windowWidth / (float)windowHeight, 0.001f, 1000.f);
 
-		glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-		glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
+		// control camera
+		currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
 
-		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-		glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-
-		glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
-
-		GLfloat radius = 10.0f;
-		GLfloat camX = sin(glfwGetTime()) * radius;
-		GLfloat camZ = cos(glfwGetTime()) * radius;
-		view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-
-
-		model = glm::rotate(glm::mat4(1.0f), -55.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-		//view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+		cameraControl(camera, deltaTime);
+		view = camera.getViewMatrix();
 
 		// load matrices to GPU
 		GLint modelLoc = glGetUniformLocation(shaderProgram.getProgram(), "model");
@@ -127,16 +146,24 @@ int main()
 	return 0;
 }
 
-//void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
-//{
-//
-//	GLfloat cameraSpeed = 0.05f;
-//	if(key == GLFW_KEY_W)
-//		cameraPos += cameraSpeed * cameraFront;
-//	if(key == GLFW_KEY_S)
-//		cameraPos -= cameraSpeed * cameraFront;
-//	if(key == GLFW_KEY_A)
-//		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-//	if(key == GLFW_KEY_D)
-//		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-//}
+void cameraControl(Camera& camera, GLfloat deltaTime)
+{
+	camera.processMouseMovement(xOffset, yOffset, true);
+	if (GetAsyncKeyState('W') & 0x8000)
+		camera.processKeyboard(Camera::CameraMovement::FORWARD, deltaTime);
+	if (GetAsyncKeyState('S') & 0x8000)
+		camera.processKeyboard(Camera::CameraMovement::BACKWARD, deltaTime);
+	if (GetAsyncKeyState('D') & 0x8000)
+		camera.processKeyboard(Camera::CameraMovement::RIGHT, deltaTime);
+	if (GetAsyncKeyState('A') & 0x8000)
+		camera.processKeyboard(Camera::CameraMovement::LEFT, deltaTime);
+}
+
+void mouseCallback(GLFWwindow* window, double xpos, double ypos)
+{
+	GLfloat lastX = 400, lastY = 300;
+	xOffset = (GLfloat)xpos - lastX;
+	yOffset = lastY - (GLfloat)ypos;
+	lastX = (GLfloat)xpos;
+	lastY = (GLfloat)ypos;
+}

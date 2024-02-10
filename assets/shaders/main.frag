@@ -2,7 +2,11 @@
 
 out vec4 FragColor;
 
+uniform vec2 uWindowSize;
+
 void main()
 {
-   FragColor = vec4(0.f, 0.f, 1.f, 1.f);
+   vec2 uv = gl_FragCoord.xy / uWindowSize;
+
+   FragColor = vec4(uv, 0.0, 1.0);
 }
