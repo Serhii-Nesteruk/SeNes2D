@@ -1,12 +1,10 @@
 #version 460 core
 
 out vec4 FragColor;
-
-uniform vec2 uWindowSize;
+uniform float uAmbientIntense;
 
 void main()
 {
-   vec2 uv = gl_FragCoord.xy / uWindowSize;
-
-   FragColor = vec4(uv, 0.0, 1.0);
+   vec3 rgb = uAmbientIntense * vec3(1.0, 1.0, 0.0);
+   FragColor = vec4(rgb, 1.0);
 }

@@ -60,5 +60,5 @@ private:
 	glm::vec3 _worldUp{ };
 
 	GLfloat _yaw = -90.0f, _pitch = 0.f;
-	GLfloat _movementSpeed = 3.0f, _mouseSensitivity = 0.25f, _zoom = 45.0f;
+	GLfloat _movementSpeed = 25.0f, _mouseSensitivity = 0.1f, _zoom = 45.0f;
 };
