@@ -8,10 +8,12 @@
 class ShaderProgram {
 public:
 	ShaderProgram() = default;
-	ShaderProgram(const ShaderProgram&) = default;
-	ShaderProgram& operator=(const ShaderProgram&) = default;
-	
-	ShaderProgram(bool shouldCreate);
+	ShaderProgram(const ShaderProgram&) = delete;
+	ShaderProgram& operator=(const ShaderProgram&) = delete;
+	ShaderProgram(ShaderProgram&& other) noexcept;
+	ShaderProgram& operator=(ShaderProgram&& other);
+
+	explicit ShaderProgram(bool shouldCreate);
 	ShaderProgram(GLuint vertShader, GLuint fragShader);
 	~ShaderProgram();
 
@@ -51,9 +53,10 @@ public:
 
 private:
 	void checkLinkStatus();
+	void dataReset(ShaderProgram& other);
 
 private:
-	GLuint program = Gl::Program::invalidId;
-	bool isAttached_ = false, isLinked_ = false;
+	GLuint _program = Gl::Program::invalidId;
+	bool _isAttached = false, _isLinked = false;
 
 };
