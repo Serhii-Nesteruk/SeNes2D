@@ -6,8 +6,10 @@ class VAO {
 public:
 	VAO() = default;
 	VAO(bool isGenerate, bool isBind);
-	VAO(const VAO& other);
-	VAO& operator=(const VAO& other);
+	VAO(const VAO& other) = delete;
+	VAO& operator=(const VAO& other) = delete;
+	VAO(VAO&& other) noexcept;
+	VAO& operator=(VAO&& other) noexcept;
 
 	VAO(GLuint index, GLint size, GLenum type, GLboolean normilized,
 		GLsizei stride, const void* pointer);

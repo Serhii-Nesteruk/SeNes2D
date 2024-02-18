@@ -2,24 +2,23 @@
 
 glm::mat4 Camera::getViewMatrix()
 {
-	glm::mat4 view = glm::lookAt(_position, _position + _front, _up);
-    return glm::translate(view, glm::vec3(0.f, 0.f, -400.f));
+	return glm::mat4();
 }
-void Camera::processKeyboard(Camera::CameraMovement direction, GLfloat deltaTime)
+void Camera::processKeyboard(Movement direction, GLfloat deltaTime)
 {
 	GLfloat speed = _movementSpeed * deltaTime;
 	switch (direction)
 	{
-	case CameraMovement::FORWARD:
+	case Movement::FORWARD:
 		_position += _front * speed;
 		break;
-	case CameraMovement::BACKWARD:
+	case Movement::BACKWARD:
 		_position -= _front * speed;
 		break;
-	case CameraMovement::LEFT:
+	case Movement::LEFT:
 		_position -= _right * speed;
 		break;
-	case CameraMovement::RIGHT:
+	case Movement::RIGHT:
 		_position += _right * speed;
 		break;
 	default:
@@ -54,4 +53,46 @@ void Camera::updateCameraVectors()
 
 	_right = glm::normalize(glm::cross(_front, _worldUp));
 	_up = glm::normalize(glm::cross(_right, _front));
+}
+void Camera::setYaw(GLfloat yaw)
+{
+	_yaw = yaw;
+	updateCameraVectors();
+}
+GLfloat Camera::getYaw() const
+{
+	return _yaw;
+}
+void Camera::setPitch(GLfloat pitch)
+{
+	_pitch = pitch;
+	updateCameraVectors();
+}
+GLfloat Camera::getPitch() const
+{
+	return _pitch;
+}
+void Camera::setSpeed(GLfloat speed)
+{
+	_movementSpeed = speed;
+}
+GLfloat Camera::getSpeed() const
+{
+	return _movementSpeed;
+}
+void Camera::setSensitivity(GLfloat sensitivity)
+{
+	_mouseSensitivity = sensitivity;
+}
+GLfloat Camera::getSensitivity() const
+{
+	return _mouseSensitivity;
+}
+void Camera::setZoom(GLfloat zoom)
+{
+	_zoom = zoom;
+}
+GLfloat Camera::getZoom() const
+{
+	return _zoom;
 }

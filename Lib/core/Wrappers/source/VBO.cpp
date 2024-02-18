@@ -72,15 +72,16 @@ GLuint VBO::getId() const
 	return _id;
 }
 
-VBO::VBO(const VBO& other)
+VBO::VBO(VBO&& other) noexcept
 {
-	*this = other;
+	*this = std::move(other);
 }
-
-VBO& VBO::operator=(const VBO& other)
+VBO& VBO::operator=(VBO&& other) noexcept
 {
-	_isBind = other._isBind;
-	_id = other._id;
-
+	if (this != &other)
+	{
+		_isBind = other._isBind;
+		_id = other._id;
+	}
 	return *this;
 }

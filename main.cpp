@@ -108,9 +108,9 @@ int main()
 	VAO vao(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 
 	// create and setup camera
-	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f); // move to 'Camera'
-	glm::vec3 cameraPos = glm::vec3(0.f, 0.f, 0.f); // move to 'Camera'
-	Camera camera(cameraPos, up);
+	//glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f); // move to 'Camera'
+	//glm::vec3 cameraPos = glm::vec3(0.f, 0.f, 0.f); // move to 'Camera'
+	//Camera camera(cameraPos, up);
 
 	// Create model, view and projection matrices
 	// glm::mat4 model = glm::rotate(model, -55.0f, glm::vec3(1.0f, 0.0f, 0.0f));

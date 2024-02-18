@@ -7,8 +7,10 @@
 class VBO {
 public:
 	VBO() = default;
-	VBO(const VBO& other);
-	VBO& operator=(const VBO& other);
+	VBO(const VBO& other) = delete;
+	VBO& operator=(const VBO& other) = delete;
+	VBO(VBO&& other) noexcept;
+	VBO& operator=(VBO&& other) noexcept;
 
 	VBO(bool isGenerate, bool isBind);
 	explicit VBO(const std::vector<GLfloat>& data, GLenum usage = GL_STATIC_DRAW);
