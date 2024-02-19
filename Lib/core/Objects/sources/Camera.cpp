@@ -2,24 +2,39 @@
 
 glm::mat4 Camera::getViewMatrix()
 {
-	return glm::mat4();
+	glm::vec3 zAxis = -glm::normalize(getForwardVector());
+	glm::vec3 xAxis = glm::normalize(glm::cross(getUpVector(), zAxis));
+	glm::vec3 yAxis = glm::cross(zAxis, xAxis);
+
+	glm::mat4 translation = glm::mat4(1.0f);
+	translation[3][0] = -glm::dot(xAxis, _position);
+	translation[3][1] = -glm::dot(yAxis, _position);
+	translation[3][2] = glm::dot(zAxis, _position);
+
+	glm::mat4 rotation = glm::mat4(1.0f);
+	rotation[0] = glm::vec4(xAxis, 0.0f);
+	rotation[1] = glm::vec4(yAxis, 0.0f);
+	rotation[2] = glm::vec4(zAxis, 0.0f);
+
+	return rotation * translation;
 }
+
 void Camera::processKeyboard(Movement direction, GLfloat deltaTime)
 {
 	GLfloat speed = _movementSpeed * deltaTime;
 	switch (direction)
 	{
 	case Movement::FORWARD:
-		_position += _front * speed;
+		_position += getForwardVector() * speed;
 		break;
 	case Movement::BACKWARD:
-		_position -= _front * speed;
+		_position -= getForwardVector() * speed;
 		break;
 	case Movement::LEFT:
-		_position -= _right * speed;
+		_position -= getRightVector() * speed;
 		break;
 	case Movement::RIGHT:
-		_position += _right * speed;
+		_position += getRightVector() * speed;
 		break;
 	default:
 		break;
@@ -30,47 +45,16 @@ void Camera::processMouseMovement(GLfloat xOffset, GLfloat yOffset, GLboolean co
 	xOffset *= _mouseSensitivity;
 	yOffset *= _mouseSensitivity;
 
-	_yaw += xOffset;
-	_pitch += yOffset;
+	_rotate.y += xOffset;
+	_rotate.x += yOffset;
 
 	if (constrainPitch)
 	{
-		if (_pitch >= 89.f)
-			_pitch = 89.f;
-		if (_pitch <= -89.f)
-			_pitch = -89.f;
+		if (_rotate.y >= 89.f)
+			_rotate.y = 89.f;
+		if (_rotate.x <= -89.f)
+			_rotate.x = -89.f;
 	}
-
-	updateCameraVectors();
-}
-void Camera::updateCameraVectors()
-{
-	glm::vec3 tempFront{};
-	tempFront.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));
-	tempFront.y = sin(glm::radians(_pitch));
-	tempFront.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
-	_front = glm::normalize(tempFront);
-
-	_right = glm::normalize(glm::cross(_front, _worldUp));
-	_up = glm::normalize(glm::cross(_right, _front));
-}
-void Camera::setYaw(GLfloat yaw)
-{
-	_yaw = yaw;
-	updateCameraVectors();
-}
-GLfloat Camera::getYaw() const
-{
-	return _yaw;
-}
-void Camera::setPitch(GLfloat pitch)
-{
-	_pitch = pitch;
-	updateCameraVectors();
-}
-GLfloat Camera::getPitch() const
-{
-	return _pitch;
 }
 void Camera::setSpeed(GLfloat speed)
 {
@@ -88,11 +72,16 @@ GLfloat Camera::getSensitivity() const
 {
 	return _mouseSensitivity;
 }
-void Camera::setZoom(GLfloat zoom)
+
+Camera::Camera(const glm::vec3& position,
+	GLfloat speed,
+	GLfloat sensitivity)
+	:  _movementSpeed(speed),
+	  _mouseSensitivity(sensitivity)
 {
-	_zoom = zoom;
+	this->setPosition(position); // TODO: move it ^
 }
-GLfloat Camera::getZoom() const
+glm::mat4 Camera::getProjectionMatrix(GLfloat windowWidth, GLfloat windowHeight) const
 {
-	return _zoom;
+	return glm::perspective(glm::radians(90.f), windowWidth / windowHeight, 1.f, 10000.f); ;
 }

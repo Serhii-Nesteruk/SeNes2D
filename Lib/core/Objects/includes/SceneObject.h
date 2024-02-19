@@ -25,6 +25,10 @@ public:
 	SceneObject() = default;
 	~SceneObject() = default;
 
+	[[nodiscard]] virtual glm::vec3 getForwardVector() const;
+	[[nodiscard]] virtual glm::vec3 getUpVector() const;
+	[[nodiscard]] virtual glm::vec3 getRightVector() const;
+
 	virtual void draw(ShaderManager shaderManager, Camera& camera);
 	virtual void processKeyboard(Movement direction, GLfloat deltaTime) = 0;
 	virtual void processMouseMovement(GLfloat xOffset, GLfloat yOffset, GLboolean constrainPitch) = 0;

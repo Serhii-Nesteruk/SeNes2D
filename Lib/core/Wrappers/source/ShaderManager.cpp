@@ -51,7 +51,7 @@ ShaderManager::ShaderPack& ShaderManager::ShaderPack::operator=(ShaderManager::S
 	setProgram(std::move(other._shaderProgram));
 	return *this;
 }
-void ShaderManager::ShaderPack::dataReset(ShaderManager::ShaderPack& other)
+void ShaderManager::ShaderPack::dataReset(ShaderManager::ShaderPack& other) // TODO:
 {
 	other = std::move(ShaderPack());
 }

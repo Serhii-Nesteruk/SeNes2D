@@ -102,7 +102,7 @@ void SceneObject::setRotate(const glm::vec3& rotate)
 
 glm::vec3 SceneObject::getRotate() const
 {
-	return _rotate
+	return _rotate;
 }
 
 void SceneObject::setVao(VAO&& vao)
@@ -123,4 +123,35 @@ void SceneObject::setVertices(const std::vector<GLfloat>& vertices)
 std::vector<GLfloat> SceneObject::getVertices() const
 {
 	return _vertices;
+}
+glm::vec3 SceneObject::getForwardVector() const //*
+{
+	auto r = glm::vec2(glm::radians(_rotate.x), glm::radians(_rotate.y));
+
+	// clang-format off
+	return glm::normalize(glm::vec3{
+		cos(r.x) * -sin(r.y),
+		sin(r.x),
+		cos(r.x) * cos(r.y)
+	});
+	// clang-format on
+}
+
+glm::vec3 SceneObject::getUpVector() const //*
+{
+	auto r = glm::vec2(glm::radians(_rotate.x), glm::radians(_rotate.y));
+	r.x += glm::radians(-90.f);
+
+	// clang-format off
+	return glm::normalize(glm::vec3{
+		cos(r.x) * -sin(r.y),
+		sin(r.x),
+		cos(r.x) * cos(r.y)
+	});
+	// clang-format on
+}
+
+glm::vec3 SceneObject::getRightVector() const //*
+{
+	return glm::normalize(glm::cross(getForwardVector(), getUpVector()));
 }
