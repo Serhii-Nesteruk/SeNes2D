@@ -6,11 +6,7 @@ file(
 
 add_subdirectory(Shapes)
 
-add_library(Objects ${ObjectsSources}
-        sources/Camera.cpp
-        includes/Camera.h
-        sources/SceneObject.cpp
-        includes/SceneObject.h)
+add_library(Objects ${ObjectsSources})
 
 target_link_libraries(Objects PUBLIC Shapes Wrappers Glm)
 

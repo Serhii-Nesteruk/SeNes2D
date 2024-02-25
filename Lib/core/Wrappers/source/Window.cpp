@@ -27,7 +27,7 @@ void Window::create(Size size, const std::string& title, GLFWmonitor* monitor, G
 	}
 
     _wasCreated = true;
-    this->_size = size;
+    _size = size;
 }
 
 void Window::swapBuffers(GLFWwindow* window)

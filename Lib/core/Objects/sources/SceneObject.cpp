@@ -32,19 +32,22 @@ const Texture* SceneObject::getTexture() const
 	return _texture;
 }
 
-void SceneObject::draw(ShaderManager shaderManager, Camera& camera)
+void SceneObject::draw(const std::string& programName, ShaderManager& shaderManager, Camera& camera)
 {
-	updateMatrices();
+// updateMatrices();
 
-	_vbo = std::move(VBO(_vertices));
-	_vao = std::move(VAO(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr));
+// _vbo = std::move(VBO(_vertices));
+// _vao = std::move(VAO(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr));
+// Gl::VAO::vertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
 
-	if (!_vbo.isBind())
-		_vbo.bind();
-	if (!_vao.isBind())
-		_vao.bind();
+// if (!_vbo.isBind())
+// 	_vbo.bind();
+// if (!_vao.isBind())
+// 	_vao.bind();
 
-	//TODO: continue implementation...
+// GLint modelLoc = glGetUniformLocation(shaderManager.getProgram(programName).getProgram(), "model");
+// glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(camera.getModelMatrix())); // *
+
 }
 
 void SceneObject::updateMatrices()
@@ -52,9 +55,9 @@ void SceneObject::updateMatrices()
 	if (_isReverseMatrixCalculating)
 	{
 		_modelMatrix = glm::translate(_modelMatrix, _position);
-		_modelMatrix = glm::rotate(_modelMatrix, glm::radians(_rotate.x), glm::vec3(1.f, 0.f, 0.f));
-		_modelMatrix = glm::rotate(_modelMatrix, glm::radians(_rotate.y), glm::vec3(0.f, 1.f, 0.f));
-		_modelMatrix = glm::rotate(_modelMatrix, glm::radians(_rotate.z), glm::vec3(0.f, 0.f, 1.f));
+		_modelMatrix = glm::rotate(_modelMatrix, glm::radians(_rotation.x), glm::vec3(1.f, 0.f, 0.f));
+		_modelMatrix = glm::rotate(_modelMatrix, glm::radians(_rotation.y), glm::vec3(0.f, 1.f, 0.f));
+		_modelMatrix = glm::rotate(_modelMatrix, glm::radians(_rotation.z), glm::vec3(0.f, 0.f, 1.f));
 
 		_modelMatrix = glm::translate(_modelMatrix, -_origin);
 		_modelMatrix = glm::translate(_modelMatrix, _origin);
@@ -63,9 +66,9 @@ void SceneObject::updateMatrices()
 	}
 	else
 	{
-		_modelMatrix = glm::rotate(_modelMatrix, glm::radians(_rotate.x), glm::vec3(1.f, 0.f, 0.f));
-		_modelMatrix = glm::rotate(_modelMatrix, glm::radians(_rotate.y), glm::vec3(0.f, 1.f, 0.f));
-		_modelMatrix = glm::rotate(_modelMatrix, glm::radians(_rotate.z), glm::vec3(0.f, 0.f, 1.f));
+		_modelMatrix = glm::rotate(_modelMatrix, glm::radians(_rotation.x), glm::vec3(1.f, 0.f, 0.f));
+		_modelMatrix = glm::rotate(_modelMatrix, glm::radians(_rotation.y), glm::vec3(0.f, 1.f, 0.f));
+		_modelMatrix = glm::rotate(_modelMatrix, glm::radians(_rotation.z), glm::vec3(0.f, 0.f, 1.f));
 
 		_modelMatrix = glm::translate(_modelMatrix, _position);
 		_modelMatrix = glm::translate(_modelMatrix, _origin);
@@ -96,13 +99,13 @@ glm::mat4 SceneObject::getModelMatrix() const
 
 void SceneObject::setRotate(const glm::vec3& rotate)
 {
-	_rotate = rotate;
+	_rotation = rotate;
 	updateMatrices();
 }
 
 glm::vec3 SceneObject::getRotate() const
 {
-	return _rotate;
+	return _rotation;
 }
 
 void SceneObject::setVao(VAO&& vao)
@@ -126,7 +129,7 @@ std::vector<GLfloat> SceneObject::getVertices() const
 }
 glm::vec3 SceneObject::getForwardVector() const //*
 {
-	auto r = glm::vec2(glm::radians(_rotate.x), glm::radians(_rotate.y));
+	auto r = glm::vec2(glm::radians(_rotation.x), glm::radians(_rotation.y));
 
 	// clang-format off
 	return glm::normalize(glm::vec3{
@@ -139,7 +142,7 @@ glm::vec3 SceneObject::getForwardVector() const //*
 
 glm::vec3 SceneObject::getUpVector() const //*
 {
-	auto r = glm::vec2(glm::radians(_rotate.x), glm::radians(_rotate.y));
+	auto r = glm::vec2(glm::radians(_rotation.x), glm::radians(_rotation.y));
 	r.x += glm::radians(-90.f);
 
 	// clang-format off

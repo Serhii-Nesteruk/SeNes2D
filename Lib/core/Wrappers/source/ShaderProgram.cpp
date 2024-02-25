@@ -38,7 +38,7 @@ void ShaderProgram::create()
 void ShaderProgram::link()
 {
 	if (!isAttached())
-		throw std::runtime_error("You can't to link the shader program, bacause the program is not attached");
+		throw std::runtime_error("You can't to link the shader program, because the program is not attached");
 	Gl::Program::link(_program);
 	checkLinkStatus();
 
@@ -240,7 +240,7 @@ ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other)
 {
 	if (this != &other)
 	{
-		dataReset(*this);
+		// dataReset(*this);
 		_program = other._program;
 		_isAttached = other._isAttached;
 		_isLinked = other._isLinked;

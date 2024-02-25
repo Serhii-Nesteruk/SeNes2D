@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Gl.h"
-
+#include "Window.h"
 #include "SceneObject.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -11,7 +11,7 @@ class Camera : public SceneObject
 {
 public:
 	Camera() = default;
-	Camera(const glm::vec3& position,
+	Camera(const glm::vec3& position, bool setCursorMousePosCallback = false,
 		 GLfloat speed = 35.f, GLfloat sensitivity = 0.1f);
 	Camera(const Camera&) = default;
 	Camera& operator=(const Camera&) = default;
@@ -30,8 +30,12 @@ public:
 	[[nodiscard]] GLfloat getSensitivity() const;
 	[[nodiscard]] glm::mat4 getProjectionMatrix(GLfloat windowWidth, GLfloat windowHeight) const;
 
+	static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
+	void setCursorPosCallback();
+	void control(GLfloat deltaTime);
 private:
 	glm::mat4 _projection{};
 
 	GLfloat _movementSpeed = 25.f, _mouseSensitivity = 0.1f;
+	inline static GLfloat _xMouseOffset = 0.f, _yMouseOffset = 0.f;
 };

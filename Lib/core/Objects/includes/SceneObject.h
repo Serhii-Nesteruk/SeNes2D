@@ -29,7 +29,10 @@ public:
 	[[nodiscard]] virtual glm::vec3 getUpVector() const;
 	[[nodiscard]] virtual glm::vec3 getRightVector() const;
 
-	virtual void draw(ShaderManager shaderManager, Camera& camera);
+	virtual void draw(const std::string& programName,
+		ShaderManager& shaderManager, Camera& camera);
+	virtual void draw(const std::string& programName,
+		ShaderProgram* program, Camera& camera) {};
 	virtual void processKeyboard(Movement direction, GLfloat deltaTime) = 0;
 	virtual void processMouseMovement(GLfloat xOffset, GLfloat yOffset, GLboolean constrainPitch) = 0;
 
@@ -62,7 +65,7 @@ protected:
 protected:
 	bool _isReverseMatrixCalculating = false;
 	glm::mat4 _modelMatrix = glm::mat4(1);
-	glm::vec3 _rotate{};
+	glm::vec3 _rotation{};
 	glm::vec3 _origin{};
 	glm::vec3 _position{};
 	glm::vec3 _scale{1.f, 1.f, 1.f};

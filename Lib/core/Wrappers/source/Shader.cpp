@@ -103,7 +103,7 @@ Shader& Shader::operator=(Shader&& other)
 {
 	if (this != &other)
 	{
-		dataReset(*this);
+		// dataReset(*this);
 		_shader = other._shader;
 		_type = other._type;
 		_source = other._source;
