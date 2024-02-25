@@ -2,14 +2,14 @@
 
 #include "Utils.h"
 
-Shader::Shader(const Gl::Shader::Type type_, bool shouldCreate)
+Shader::Shader(const Gl::Shader::Type& type, bool shouldCreate)
 {
-	_type = type_;
+	_type = type;
 	if (shouldCreate)
 		create();
 }
 
-Shader::Shader(const std::filesystem::path& path, const Gl::Shader::Type type)
+Shader::Shader(const std::filesystem::path& path, const Gl::Shader::Type& type)
 	: Shader(type, true)
 {
 	loadFromFile(path);
@@ -92,4 +92,32 @@ void Shader::checkCompileStatus()
 
 void Shader::setType(Gl::Shader::Type type_) {
     _type = type_; // TODO: update shader state
+}
+
+Shader::Shader(Shader&& other) noexcept
+{
+	*this = std::move(other);
+}
+
+Shader& Shader::operator=(Shader&& other)
+{
+	if (this != &other)
+	{
+		// dataReset(*this);
+		_shader = other._shader;
+		_type = other._type;
+		_source = other._source;
+		_isCompile = other._isCompile;
+		dataReset(other);
+	}
+
+	return *this;
+}
+
+void Shader::dataReset(Shader& shader)
+{
+	shader._shader = Gl::Shader::invalidId;
+	shader._type = Gl::Shader::Type::FRAGMENT;
+	shader._source.clear();
+	shader._isCompile = false;
 }

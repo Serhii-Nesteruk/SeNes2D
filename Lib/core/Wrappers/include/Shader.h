@@ -8,10 +8,12 @@
 class Shader {
 public:
 	Shader() = default;
-	explicit Shader(const Gl::Shader::Type type_, bool shouldCreate = true);
-	Shader(const std::filesystem::path& path, const Gl::Shader::Type type_);
-	Shader(const Shader&) = default;
-	Shader& operator=(const Shader&) = default;
+	explicit Shader(const Gl::Shader::Type& type, bool shouldCreate = true);
+	Shader(const std::filesystem::path& path, const Gl::Shader::Type& type);
+	Shader(const Shader& other) = delete;
+	Shader& operator=(const Shader& other) = delete;
+	Shader(Shader&& other) noexcept;
+	Shader& operator=(Shader&& other);
 	~Shader();
 
 	void loadFromFile(const std::filesystem::path& path);
@@ -32,6 +34,7 @@ public:
 
 private:
 	void checkCompileStatus();
+	void dataReset(Shader& shader);
 
 private:
 	bool _isCompile = false;

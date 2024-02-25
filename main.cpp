@@ -1,8 +1,12 @@
 #include "Window.h"
+#include "Camera.h"
+#include "ShaderManager.h"
 #include "ShaderProgram.h"
 #include "Shader.h"
 #include "VAO.h"
 #include "VBO.h"
+#include "Lighting.h"
+#include "Cube.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -10,12 +14,18 @@
 #include <iostream>
 #include <vector>
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+GLfloat xOffset = 0.f;
+GLfloat yOffset = 0.f;
+
+void cameraControl(Camera& camera, GLfloat deltaTime);
+void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 
 int main()
 {
 	GLint screenWidth = 800.f, screenHeight = 800.f;
-	Window window(Window::Size(screenWidth, screenHeight), "Hi");
+	Window::instance().initializeGLFWVersion();
+	Window::instance().create(Window::Size(screenWidth, screenHeight), "Hi");
+	Window::instance().makeContextCurrent();
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -23,120 +33,169 @@ int main()
 		return -1;
 	}
 
-	std::vector<GLfloat> vertices = {
-		-0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f,
-		0.5f,  0.5f, -0.5f,
-		0.5f,  0.5f, -0.5f,
-		-0.5f,  0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-
-		-0.5f, -0.5f,  0.5f,
-		0.5f, -0.5f,  0.5f,
-		0.5f,  0.5f,  0.5f,
-		0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
-		-0.5f, -0.5f,  0.5f,
-
-		-0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
-
-		0.5f,  0.5f,  0.5f,
-		0.5f,  0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f,  0.5f,
-		0.5f,  0.5f,  0.5f,
-
-		-0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f,  0.5f,
-		0.5f, -0.5f,  0.5f,
-		-0.5f, -0.5f,  0.5f,
-		-0.5f, -0.5f, -0.5f,
-
-		-0.5f,  0.5f, -0.5f,
-		0.5f,  0.5f, -0.5f,
-		0.5f,  0.5f,  0.5f,
-		0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f, -0.5f
-	};
-
+	// setting up shaders and the shader program
 	Shader vertexShader("assets//shaders//main.vert", Gl::Shader::Type::VERTEX);
 	Shader fragmentShader("assets//shaders//main.frag", Gl::Shader::Type::FRAGMENT);
-
 	ShaderProgram shaderProgram(vertexShader.getShader(), fragmentShader.getShader());
+	shaderProgram.use();
 
-	VBO vbo(vertices);
-	VAO vao(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+	GLint windowWidth = 0, windowHeight = 0;
+	glfwGetFramebufferSize(Window::instance().getWinTarget(), &windowWidth, &windowHeight);
+	// shaderProgram.uniform("uWindowSize", static_cast<GLfloat>(windowWidth), static_cast<GLfloat>(windowHeight));
 
-	glm::mat4 model = glm::mat4(1.0f);
-	glm::mat4 view = glm::mat4(1.0f);
-	glm::mat4 projection = glm::perspective(45.0f, (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
+	Cube cube;
+// float size = 100.f;
+// std::vector<GLfloat> vertices = {
+// 	// Передня грань (Front face)
+// 	-size, -size, size,    // 1
+// 	0.0f, 0.0f, 1.0f,      // Нормаль
+// 	size, -size, size,     // 2
+// 	0.0f, 0.0f, 1.0f,      // Нормаль
+// 	size, size, size,      // 3
+// 	0.0f, 0.0f, 1.0f,      // Нормаль
+// 	-size, size, size,     // 4
+// 	0.0f, 0.0f, 1.0f,      // Нормаль
+// 	-size, -size, size,    // 5
+// 	0.0f, 0.0f, 1.0f,      // Нормаль
+// 	size, size, size,      // 6
+// 	0.0f, 0.0f, 1.0f,      // Нормаль
 
-	while (!window.shouldClose())
+// 	// Задня грань (Back face)
+// 	-size, -size, -size,   // 7
+// 	0.0f, 0.0f, -1.0f,     // Нормаль
+// 	size, -size, -size,    // 8
+// 	0.0f, 0.0f, -1.0f,     // Нормаль
+// 	size, size, -size,     // 9
+// 	0.0f, 0.0f, -1.0f,     // Нормаль
+// 	-size, size, -size,    // 10
+// 	0.0f, 0.0f, -1.0f,     // Нормаль
+// 	-size, -size, -size,   // 11
+// 	0.0f, 0.0f, -1.0f,     // Нормаль
+// 	size, size, -size,     // 12
+// 	0.0f, 0.0f, -1.0f,     // Нормаль
+
+// 	// Ліва грань (Left face)
+// 	-size, size, size,     // 13
+// 	-1.0f, 0.0f, 0.0f,     // Нормаль
+// 	-size, size, -size,    // 14
+// 	-1.0f, 0.0f, 0.0f,     // Нормаль
+// 	-size, -size, -size,   // 15
+// 	-1.0f, 0.0f, 0.0f,     // Нормаль
+// 	-size, -size, size,    // 16
+// 	-1.0f, 0.0f, 0.0f,     // Нормаль
+// 	-size, size, size,     // 17
+// 	-1.0f, 0.0f, 0.0f,     // Нормаль
+// 	-size, -size, -size,   // 18
+// 	-1.0f, 0.0f, 0.0f,     // Нормаль
+
+// 	// Права грань (Right face)
+// 	size, size, size,      // 19
+// 	1.0f, 0.0f, 0.0f,      // Нормаль
+// 	size, size, -size,     // 20
+// 	1.0f, 0.0f, 0.0f,      // Нормаль
+// 	size, -size, -size,    // 21
+// 	1.0f, 0.0f, 0.0f,      // Нормаль
+// 	size, -size, size,     // 22
+// 	1.0f, 0.0f, 0.0f,      // Нормаль
+// 	size, size, size,      // 23
+// 	1.0f, 0.0f, 0.0f,      // Нормаль
+// 	size, -size, -size,    // 24
+// 	1.0f, 0.0f, 0.0f,      // Нормаль
+
+// 	// Верхня грань (Top face)
+// 	-size, size, size,     // 25
+// 	0.0f, 1.0f, 0.0f,      // Нормаль
+// 	size, size, size,      // 26
+// 	0.0f, 1.0f, 0.0f,      // Нормаль
+// 	size, size, -size,     // 27
+// 	0.0f, 1.0f, 0.0f,      // Нормаль
+// 	-size, size, -size,    // 28
+// 	0.0f, 1.0f, 0.0f,      // Нормаль
+// 	-size, size, size,     // 29
+// 	0.0f, 1.0f, 0.0f,      // Нормаль
+// 	size, size, -size,     // 30
+// 	0.0f, 1.0f, 0.0f,      // Нормаль
+
+// 	// Нижня грань (Bottom face)
+// 	-size, -size, size,    // 31
+// 	0.0f, -1.0f, 0.0f,     // Нормаль
+// 	size, -size, size,     // 32
+// 	0.0f, -1.0f, 0.0f,     // Нормаль
+// 	size, -size, -size,    // 33
+// 	0.0f, -1.0f, 0.0f,     // Нормаль
+// 	-size, -size, -size,   // 34
+// 	0.0f, -1.0f, 0.0f,     // Нормаль
+// 	-size, -size, size,    // 35
+// 	0.0f, -1.0f, 0.0f,     // Нормаль
+// 	size, -size, -size,    // 36
+// 	0.0f, -1.0f, 0.0f      // Нормаль
+// };
+
+	// setup VAO & VBO
+	VBO vbo(cube.getVertices());
+	VAO vao(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
+	Gl::VAO::vertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+
+	vao.bind();
+	vbo.bind();
+
+	glm::vec3 lightingPosition {1000.f, 0.f, 0.f};
+
+	// create and setup camera
+	Camera camera(glm::vec3(0.f, 0.f, 0.f), true);
+
+	GLfloat deltaTime = 0.f;
+	GLfloat lastFrame = 0.f;
+	GLfloat currentFrame = 0.f;
+
+	Lighting light;
+	light._ambient.setAmbientIntense(0.8f);
+
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+
+	while (!Window::instance().shouldClose())
 	{
-		window.pollEvents();
+		currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
 
-		window.clearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		window.clear(GL_COLOR_BUFFER_BIT);
+		xOffset = 0.f; // move to 'Camera'
+		yOffset = 0.f; // move to 'Camera'
+
+		Window::instance().pollEvents();
+
+		Window::instance().clearColor(0.4f, 0.3f, 0.2f, 1.0f);
+		Window::instance().clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shaderProgram.use();
 
-		// camera
-		glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+		camera.control(deltaTime);
 
-		glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-		glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-
-		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-		glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-
-		glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
-
-		GLfloat radius = 10.0f;
-		GLfloat camX = sin(glfwGetTime()) * radius;
-		GLfloat camZ = cos(glfwGetTime()) * radius;
-		view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-
-
-		model = glm::rotate(glm::mat4(1.0f), -55.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-		//view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+		cube.draw("main", &shaderProgram, camera);
 
 		// load matrices to GPU
-		GLint modelLoc = glGetUniformLocation(shaderProgram.getProgram(), "model");
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		// GLint modelLoc = glGetUniformLocation(shaderProgram.getProgram(), "model");
+		// glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(camera.getModelMatrix())); // *
 
-		GLint viewLoc = glGetUniformLocation(shaderProgram.getProgram(), "view");
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		// GLint viewLoc = glGetUniformLocation(shaderProgram.getProgram(), "view");
+		// glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix())); // *
 
-		GLint projLoc = glGetUniformLocation(shaderProgram.getProgram(), "projection");
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		// GLint projLoc = glGetUniformLocation(shaderProgram.getProgram(), "projection");
+		// glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix((GLfloat)windowWidth, (GLfloat)windowHeight))); // *
 
-		vao.bind();
+		GLint ambientIntenseLoc = glGetUniformLocation(shaderProgram.getProgram(), "uAmbientIntense");
+		glUniform1f(ambientIntenseLoc, light._ambient.getAmbientIntense());
+
+		GLint lightingPositionLoc = glGetUniformLocation(shaderProgram.getProgram(), "uLightingPosition");
+		glUniform3f(lightingPositionLoc, lightingPosition.x, lightingPosition.y, lightingPosition.z);
+
+		//vao.bind();
+		//vbo.bind();
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		window.swapBuffers(window.getWinTarget());
+		Window::instance().swapBuffers(Window::instance().getWinTarget());
 	}
 
 	return 0;
 }
-
-//void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
-//{
-//
-//	GLfloat cameraSpeed = 0.05f;
-//	if(key == GLFW_KEY_W)
-//		cameraPos += cameraSpeed * cameraFront;
-//	if(key == GLFW_KEY_S)
-//		cameraPos -= cameraSpeed * cameraFront;
-//	if(key == GLFW_KEY_A)
-//		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-//	if(key == GLFW_KEY_D)
-//		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-//}

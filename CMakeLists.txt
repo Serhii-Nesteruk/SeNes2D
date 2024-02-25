@@ -8,6 +8,7 @@ set(DEPENDENCIES_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${DEPENDENCIES_DIR_NAME})
 
 add_subdirectory(dependencies/glfw-3.3.7)
 add_subdirectory(Lib/core/Utils)
+add_subdirectory(Lib/core/Lighting)
 add_subdirectory(Lib/core/Wrappers)
 add_subdirectory(Lib/core/Objects)
 add_subdirectory(Lib/glad)
@@ -22,11 +23,10 @@ target_link_libraries(SeNes2D PUBLIC
         glfw
         Wrappers
         Objects
+        # Lighting
 )
 
-target_include_directories(SeNes2D PUBLIC
-        Lib/core/Wrappers/include/Window.h
-)
+target_include_directories(SeNes2D PUBLIC Lib/core/Lighting/include)
 
 include(cmake/Deploy.cmake)
 MyDeploy(SeNes2D)

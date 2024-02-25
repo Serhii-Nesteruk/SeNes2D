@@ -1,10 +1,11 @@
 #pragma once
 
 #include "Gl.h"
+#include "Singleton.h"
 
 #include <string>
 
-class Window {
+class Window : public Utils::Singleton<Window> {
 public:
     struct Size {
         Size() = default;
@@ -22,7 +23,7 @@ public:
     Window(Size size, const std::string& title);
 	~Window();
 
-	void create(Size size, const std::string& title, GLFWmonitor* monitor, GLFWwindow* share);
+	void create(Size size, const std::string& title, GLFWmonitor* monitor = nullptr, GLFWwindow* share = nullptr);
 	void swapBuffers(GLFWwindow* window);
 	void pollEvents();
 	void clear(GLbitfield mask);
@@ -39,6 +40,7 @@ public:
 	[[nodiscard]] GLFWwindow* getWinTarget() const;
     void initializeGLFWVersion(int major = GLFW_CONTEXT_VERSION_MAJOR, int majorValue = 3,
                                int minor = GLFW_CONTEXT_VERSION_MINOR, int minorValue = 3);
+
 private:
     bool _wasCreated = false;
     Size _size;
