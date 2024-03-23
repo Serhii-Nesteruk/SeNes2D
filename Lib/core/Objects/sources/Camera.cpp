@@ -2,22 +2,18 @@
 
 glm::mat4 Camera::getViewMatrix()
 {
-	glm::vec3 zAxis = -glm::normalize(getForwardVector());
-	glm::vec3 xAxis = glm::normalize(glm::cross(getUpVector(), zAxis));
-	glm::vec3 yAxis = glm::cross(zAxis, xAxis);
-
-	glm::mat4 translation = glm::mat4(1.0f);
-	translation[3][0] = -glm::dot(xAxis, _position);
-	translation[3][1] = -glm::dot(yAxis, _position);
-	translation[3][2] = glm::dot(zAxis, _position);
-
-	glm::mat4 rotation = glm::mat4(1.0f);
-	rotation[0] = glm::vec4(xAxis, 0.0f);
-	rotation[1] = glm::vec4(yAxis, 0.0f);
-	rotation[2] = glm::vec4(zAxis, 0.0f);
-
-	return rotation * translation;
+	return _viewMatrix;
 }
+
+void Camera::updateViewMatrix()
+{
+	_viewMatrix = glm::mat4(1.0f);
+
+	_viewMatrix = glm::rotate(_viewMatrix, glm::radians(_rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+	_viewMatrix = glm::rotate(_viewMatrix, glm::radians(_rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+	_viewMatrix = glm::translate(_viewMatrix, -_position);
+}
+
 
 void Camera::processKeyboard(Movement direction, GLfloat deltaTime)
 {
@@ -25,10 +21,10 @@ void Camera::processKeyboard(Movement direction, GLfloat deltaTime)
 	switch (direction)
 	{
 	case Movement::FORWARD:
-		_position += getForwardVector() * speed;
+		_position -= getForwardVector() * speed;
 		break;
 	case Movement::BACKWARD:
-		_position -= getForwardVector() * speed;
+		_position += getForwardVector() * speed;
 		break;
 	case Movement::LEFT:
 		_position -= getRightVector() * speed;
@@ -36,9 +32,16 @@ void Camera::processKeyboard(Movement direction, GLfloat deltaTime)
 	case Movement::RIGHT:
 		_position += getRightVector() * speed;
 		break;
+	case Movement::UP:
+		_position -= getUpVector() * speed;
+		break;
+	case Movement::DOWN:
+		_position += getUpVector() * speed;
+		break;
 	default:
 		break;
 	}
+	updateViewMatrix();
 }
 
 void Camera::processMouseMovement(GLfloat xOffset, GLfloat yOffset, GLboolean constrainPitch)
@@ -50,15 +53,21 @@ void Camera::processMouseMovement(GLfloat xOffset, GLfloat yOffset, GLboolean co
 	_yMouseOffset *= _mouseSensitivity;
 
 	_rotation.y += _xMouseOffset;
-	_rotation.x += _yMouseOffset;
+	_rotation.x -= _yMouseOffset;
 
-	if (constrainPitch)
-	{
-		if (_rotation.y >= 89.f)
-			_rotation.y = 89.f;
-		if (_rotation.x <= -89.f)
-			_rotation.x = -89.f;
-	}
+	//if (constrainPitch)
+	//{
+	//	if (_rotation.x > 89.f)
+	//		_rotation.x = 89.f;
+	//	if (_rotation.x < -89.f)
+	//		_rotation.x = -89.f;
+	//	if (_rotation.y > 89.f)
+	//		_rotation.y = 89.f;
+	//	if (_rotation.y < -89.f)
+	//		_rotation.y = -89.f;
+	//}
+
+	updateViewMatrix();
 }
 
 void Camera::setSpeed(GLfloat speed)
@@ -124,4 +133,8 @@ void Camera::control(GLfloat deltaTime)
 		processKeyboard(Camera::Movement::RIGHT, deltaTime);
 	if (GetAsyncKeyState('A') & 0x8000)
 		processKeyboard(Camera::Movement::LEFT, deltaTime);
+	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+		processKeyboard(Camera::Movement::UP, deltaTime);
+	if (GetAsyncKeyState(VK_CONTROL) & 0x8000)
+		processKeyboard(Camera::Movement::DOWN, deltaTime);
 }

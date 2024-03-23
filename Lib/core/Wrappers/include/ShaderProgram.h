@@ -41,6 +41,7 @@ public:
 	void uniform(const std::string& name, GLuint v0, GLuint v1);
 	void uniform(const std::string& name, GLuint v0, GLuint v1, GLuint v2);
 	void uniform(const std::string& name, GLuint v0, GLuint v1, GLuint v2, GLuint v3);
+	void uniform(const std::string& name, const glm::vec3& vec);
 	void uniform(const std::string& name, GLsizei count, GLboolean transponse, const glm::mat2& value);
 	void uniform(const std::string& name, GLsizei count, GLboolean transponse, const glm::mat3& value);
 	void uniform(const std::string& name, GLsizei count, GLboolean transponse, const glm::mat4& value);

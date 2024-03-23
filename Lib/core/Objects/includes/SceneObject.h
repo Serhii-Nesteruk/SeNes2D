@@ -16,6 +16,8 @@ class SceneObject
 public:
 	enum class Movement
 	{
+		UP,
+		DOWN,
 		FORWARD,
 		BACKWARD,
 		LEFT,

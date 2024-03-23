@@ -12,6 +12,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 class Gl {
 public:
@@ -215,6 +216,7 @@ public:
 
     private:
         inline static GLuint id = invalidId;
+		inline static std::unordered_map<GLuint, std::unordered_map<std::string, GLint>> uniformCache;
     };
 
     static void viewport(GLint x, GLint y, GLsizei width, GLsizei height);

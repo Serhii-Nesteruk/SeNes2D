@@ -14,15 +14,9 @@
 #include <iostream>
 #include <vector>
 
-GLfloat xOffset = 0.f;
-GLfloat yOffset = 0.f;
-
-void cameraControl(Camera& camera, GLfloat deltaTime);
-void mouseCallback(GLFWwindow* window, double xpos, double ypos);
-
 int main()
 {
-	GLint screenWidth = 800.f, screenHeight = 800.f;
+	GLint screenWidth = 1280.f, screenHeight = 720.f;
 	Window::instance().initializeGLFWVersion();
 	Window::instance().create(Window::Size(screenWidth, screenHeight), "Hi");
 	Window::instance().makeContextCurrent();
@@ -44,100 +38,9 @@ int main()
 	// shaderProgram.uniform("uWindowSize", static_cast<GLfloat>(windowWidth), static_cast<GLfloat>(windowHeight));
 
 	Cube cube;
-// float size = 100.f;
-// std::vector<GLfloat> vertices = {
-// 	// Передня грань (Front face)
-// 	-size, -size, size,    // 1
-// 	0.0f, 0.0f, 1.0f,      // Нормаль
-// 	size, -size, size,     // 2
-// 	0.0f, 0.0f, 1.0f,      // Нормаль
-// 	size, size, size,      // 3
-// 	0.0f, 0.0f, 1.0f,      // Нормаль
-// 	-size, size, size,     // 4
-// 	0.0f, 0.0f, 1.0f,      // Нормаль
-// 	-size, -size, size,    // 5
-// 	0.0f, 0.0f, 1.0f,      // Нормаль
-// 	size, size, size,      // 6
-// 	0.0f, 0.0f, 1.0f,      // Нормаль
-
-// 	// Задня грань (Back face)
-// 	-size, -size, -size,   // 7
-// 	0.0f, 0.0f, -1.0f,     // Нормаль
-// 	size, -size, -size,    // 8
-// 	0.0f, 0.0f, -1.0f,     // Нормаль
-// 	size, size, -size,     // 9
-// 	0.0f, 0.0f, -1.0f,     // Нормаль
-// 	-size, size, -size,    // 10
-// 	0.0f, 0.0f, -1.0f,     // Нормаль
-// 	-size, -size, -size,   // 11
-// 	0.0f, 0.0f, -1.0f,     // Нормаль
-// 	size, size, -size,     // 12
-// 	0.0f, 0.0f, -1.0f,     // Нормаль
-
-// 	// Ліва грань (Left face)
-// 	-size, size, size,     // 13
-// 	-1.0f, 0.0f, 0.0f,     // Нормаль
-// 	-size, size, -size,    // 14
-// 	-1.0f, 0.0f, 0.0f,     // Нормаль
-// 	-size, -size, -size,   // 15
-// 	-1.0f, 0.0f, 0.0f,     // Нормаль
-// 	-size, -size, size,    // 16
-// 	-1.0f, 0.0f, 0.0f,     // Нормаль
-// 	-size, size, size,     // 17
-// 	-1.0f, 0.0f, 0.0f,     // Нормаль
-// 	-size, -size, -size,   // 18
-// 	-1.0f, 0.0f, 0.0f,     // Нормаль
-
-// 	// Права грань (Right face)
-// 	size, size, size,      // 19
-// 	1.0f, 0.0f, 0.0f,      // Нормаль
-// 	size, size, -size,     // 20
-// 	1.0f, 0.0f, 0.0f,      // Нормаль
-// 	size, -size, -size,    // 21
-// 	1.0f, 0.0f, 0.0f,      // Нормаль
-// 	size, -size, size,     // 22
-// 	1.0f, 0.0f, 0.0f,      // Нормаль
-// 	size, size, size,      // 23
-// 	1.0f, 0.0f, 0.0f,      // Нормаль
-// 	size, -size, -size,    // 24
-// 	1.0f, 0.0f, 0.0f,      // Нормаль
-
-// 	// Верхня грань (Top face)
-// 	-size, size, size,     // 25
-// 	0.0f, 1.0f, 0.0f,      // Нормаль
-// 	size, size, size,      // 26
-// 	0.0f, 1.0f, 0.0f,      // Нормаль
-// 	size, size, -size,     // 27
-// 	0.0f, 1.0f, 0.0f,      // Нормаль
-// 	-size, size, -size,    // 28
-// 	0.0f, 1.0f, 0.0f,      // Нормаль
-// 	-size, size, size,     // 29
-// 	0.0f, 1.0f, 0.0f,      // Нормаль
-// 	size, size, -size,     // 30
-// 	0.0f, 1.0f, 0.0f,      // Нормаль
-
-// 	// Нижня грань (Bottom face)
-// 	-size, -size, size,    // 31
-// 	0.0f, -1.0f, 0.0f,     // Нормаль
-// 	size, -size, size,     // 32
-// 	0.0f, -1.0f, 0.0f,     // Нормаль
-// 	size, -size, -size,    // 33
-// 	0.0f, -1.0f, 0.0f,     // Нормаль
-// 	-size, -size, -size,   // 34
-// 	0.0f, -1.0f, 0.0f,     // Нормаль
-// 	-size, -size, size,    // 35
-// 	0.0f, -1.0f, 0.0f,     // Нормаль
-// 	size, -size, -size,    // 36
-// 	0.0f, -1.0f, 0.0f      // Нормаль
-// };
-
-	// setup VAO & VBO
-	VBO vbo(cube.getVertices());
-	VAO vao(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
-	Gl::VAO::vertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-
-	vao.bind();
-	vbo.bind();
+	Cube cube1;
+	cube.setPosition(glm::vec3(0, 0, 0));
+	cube1.setPosition(glm::vec3(0, 0, 0));
 
 	glm::vec3 lightingPosition {1000.f, 0.f, 0.f};
 
@@ -151,8 +54,13 @@ int main()
 	Lighting light;
 	light._ambient.setAmbientIntense(0.8f);
 
+	GLfloat xOffset = 0.f, yOffset = 0.f;
+
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
+
+	glfwSetInputMode(Window::instance().getWinTarget(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+
 
 	while (!Window::instance().shouldClose())
 	{
@@ -172,27 +80,17 @@ int main()
 
 		camera.control(deltaTime);
 
+		shaderProgram.uniform("uCameraPos", camera.getPosition());
+
+		shaderProgram.uniform("view", 1, GL_FALSE, camera.getViewMatrix());
+		shaderProgram.uniform("projection", 1, GL_FALSE, camera.getProjectionMatrix(
+			(GLfloat)Window::instance().getSize().getX(),
+			(GLfloat)Window::instance().getSize().getY()));
+		shaderProgram.uniform("uAmbientIntense", light._ambient.getAmbientIntense());
+		shaderProgram.uniform("uLightingPosition", lightingPosition.x, lightingPosition.y, lightingPosition.z);
+
 		cube.draw("main", &shaderProgram, camera);
-
-		// load matrices to GPU
-		// GLint modelLoc = glGetUniformLocation(shaderProgram.getProgram(), "model");
-		// glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(camera.getModelMatrix())); // *
-
-		// GLint viewLoc = glGetUniformLocation(shaderProgram.getProgram(), "view");
-		// glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix())); // *
-
-		// GLint projLoc = glGetUniformLocation(shaderProgram.getProgram(), "projection");
-		// glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix((GLfloat)windowWidth, (GLfloat)windowHeight))); // *
-
-		GLint ambientIntenseLoc = glGetUniformLocation(shaderProgram.getProgram(), "uAmbientIntense");
-		glUniform1f(ambientIntenseLoc, light._ambient.getAmbientIntense());
-
-		GLint lightingPositionLoc = glGetUniformLocation(shaderProgram.getProgram(), "uLightingPosition");
-		glUniform3f(lightingPositionLoc, lightingPosition.x, lightingPosition.y, lightingPosition.z);
-
-		//vao.bind();
-		//vbo.bind();
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		cube1.draw("main", &shaderProgram, camera);
 
 		Window::instance().swapBuffers(Window::instance().getWinTarget());
 	}

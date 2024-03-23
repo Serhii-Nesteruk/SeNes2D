@@ -220,7 +220,25 @@ GLint Gl::Program::getProgramiv(GLuint shaderProgram, GLenum pname)
 
 GLint Gl::Program::getUniformLocation(GLuint program, const GLchar* name)//TODO: check return value for -1
 {
-    GLint location = glGetUniformLocation(program, name);
+	GLint location = 0;
+
+	if (auto foundProgram = uniformCache.find(program); foundProgram == uniformCache.end())
+	{
+		uniformCache[program] = {};
+	}
+
+	auto& foundProgram = uniformCache.find(program)->second;
+	auto uniformIt = foundProgram.find(std::string(name));
+	if (uniformIt == foundProgram.end())
+	{
+		location = glGetUniformLocation(program, name);
+		foundProgram[std::string(name)] = location;
+	}
+	else
+	{
+		location = uniformIt->second;
+	}
+
     checkGLErrors();
     return location;
 }
