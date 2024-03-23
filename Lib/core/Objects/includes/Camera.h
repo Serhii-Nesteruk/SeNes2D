@@ -29,12 +29,13 @@ public:
 	void setSensitivity(GLfloat sensitivity);
 	[[nodiscard]] GLfloat getSensitivity() const;
 	[[nodiscard]] glm::mat4 getProjectionMatrix(GLfloat windowWidth, GLfloat windowHeight) const;
+	void updateViewMatrix();
 
 	static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 	void setCursorPosCallback();
 	void control(GLfloat deltaTime);
 private:
-	glm::mat4 _projection{};
+	glm::mat4 _projection{}, _viewMatrix{};
 
 	GLfloat _movementSpeed = 25.f, _mouseSensitivity = 0.1f;
 	inline static GLfloat _xMouseOffset = 0.f, _yMouseOffset = 0.f;

@@ -249,3 +249,8 @@ ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other)
 
 	return *this;
 }
+
+void ShaderProgram::uniform(const std::string& name, const glm::vec3& vec)
+{
+	uniform(name, vec.x, vec.y, vec.z);
+}
