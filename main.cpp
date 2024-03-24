@@ -39,8 +39,11 @@ int main()
 
 	Cube cube;
 	Cube cube1;
+	cube.setColor({255, 255, 0});
 	cube.setPosition(glm::vec3(0, 0, 0));
-	cube1.setPosition(glm::vec3(0, 0, 0));
+	cube1.setSize(50.f);
+	cube1.setColor({255, 0, 255});
+	cube1.setPosition(glm::vec3(200, 200, 200));
 
 	glm::vec3 lightingPosition {1000.f, 0.f, 0.f};
 

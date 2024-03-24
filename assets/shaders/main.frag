@@ -7,6 +7,7 @@ in vec3 ioSurfaceToCamera;
 
 uniform float uAmbientIntense;
 uniform vec3 uLightingPosition;
+uniform vec3 uDefaultColor;
 
 void main()
 {
@@ -20,7 +21,7 @@ void main()
    vec3 halfVector = normalize(surfaceToCamera + lightDir);
    float specular = pow(dot(normal, halfVector), 32);
 
-   vec3 rgb = diffuse * uAmbientIntense * vec3(1.0, 1.0, 0.0);
+   vec3 rgb = diffuse * uAmbientIntense * uDefaultColor;
    FragColor = vec4(rgb, 1.0);
    FragColor.rgb += specular;
 }

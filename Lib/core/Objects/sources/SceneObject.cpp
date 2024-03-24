@@ -39,6 +39,8 @@ void SceneObject::draw(const std::string& programName, ShaderManager& shaderMana
 
 void SceneObject::updateMatrices()
 {
+	_modelMatrix = glm::mat4(1.f);
+
 	if (_isReverseMatrixCalculating)
 	{
 		_modelMatrix = glm::translate(_modelMatrix, _position - _origin);
