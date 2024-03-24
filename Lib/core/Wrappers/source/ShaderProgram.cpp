@@ -254,3 +254,9 @@ void ShaderProgram::uniform(const std::string& name, const glm::vec3& vec)
 {
 	uniform(name, vec.x, vec.y, vec.z);
 }
+
+void ShaderProgram::uniform(const std::string& name, const Color3& color)
+{
+	auto glColor = toGlColor3(color);
+	uniform(name, glColor.r, glColor.g, glColor.b);
+}

@@ -14,7 +14,6 @@ void Camera::updateViewMatrix()
 	_viewMatrix = glm::translate(_viewMatrix, -_position);
 }
 
-
 void Camera::processKeyboard(Movement direction, GLfloat deltaTime)
 {
 	GLfloat speed = _movementSpeed * deltaTime;
